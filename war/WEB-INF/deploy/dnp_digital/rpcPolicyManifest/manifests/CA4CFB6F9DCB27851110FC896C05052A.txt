@@ -1,0 +1,2 @@
+serviceClass: digital.dnp.client.GreetingService
+path: 1356ACEAC2D580E5FF0AE3F4DD483A82.gwt.rpc

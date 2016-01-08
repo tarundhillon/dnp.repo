@@ -1,0 +1,3 @@
+# Module dnp_digital
+# RPC service class, partial path of RPC policy file
+digital.dnp.client.GreetingService, 1356ACEAC2D580E5FF0AE3F4DD483A82.gwt.rpc

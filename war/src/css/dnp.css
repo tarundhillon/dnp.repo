@@ -1,0 +1,433 @@
+@import url('./modules/jquery.fullPage.css');
+@import url('./modules/alertify.min.css');
+@import url('./modules/handsontable.min.css');
+@import url('./modules/semantic.min.css');
+@import url('./modules/pikaday.css');
+
+
+
+/*
+
+light blue #00a1de
+dark blue #002776
+light green #88c700
+*/
+
+.lightblue{
+	color:#00a1de;
+}
+
+.blue{
+	color:#002776;
+}
+
+.green{
+	color:#88c700;
+}
+
+.black{
+	color:#333;
+}
+
+
+.bglightblue{
+	background-color:#00a1de;
+}
+
+.bgblue{
+	background:#002776;
+}
+
+.bggreen{
+	background:#88c700;
+}
+
+.bgblack{
+	background:#333;
+}
+
+h1{
+    font-size: 32px;
+    font-family: sans-serif;
+    font-weight: 300;
+}
+
+h2{
+    font-size: 24px;
+    font-family: sans-serif;
+    font-weight: 300;
+}
+
+h3{
+    font-size: 18px;
+    font-family: sans-serif;
+    font-weight: 300;
+}
+
+
+
+
+
+
+#header {
+	position: fixed;
+	height: 50px;
+	display: block;
+	width: 100%;
+	z-index: 9;
+	text-align: left;
+	color: #f2f2f2;
+	padding: 20px;
+	top: 0px;
+}
+
+#footer {
+	/*position:fixed;*/
+	height: 50px;
+	display: block;
+	width: 100%;
+	background: #333;
+	z-index: 9;
+	text-align: left;
+	color: #f2f2f2;
+	padding: 20px;
+	bottom: 0px;
+}
+
+#section-footer #footer-text {
+	width: 80%;
+	height: auto;
+	margin: 0 auto;
+	padding: 20px 0;
+}
+#menuBar {
+	float: right;
+	margin-right: 50px;
+}
+
+
+#container{
+	float: left;
+	display: table;
+    border: 0px solid #666;
+    /*margin: 30px;
+    margin-top: 100px;*/
+    position:relative;
+}
+/*
+#page1_container {
+	  float: left;
+    border: 0px solid #666;
+    padding: 10px;
+    display: table-cell;
+    vertical-align:middle;
+    border-spacing: 10px 10px;
+    width: 600px;
+    height: 400px;
+
+}*/
+
+
+#pageText{
+    padding: 10px;
+	
+/*	-webkit-box-shadow: 1px 1px 5px 1px rgba(200,200,200,1);
+	-moz-box-shadow: 1px 1px 5px 1px rgba(200,200,200,1);
+	box-shadow: 1px 1px 5px 1px rgba(200,200,200,1);
+    border: 0px solid #888;
+*/
+    margin: 10px;
+    display: table-cell;
+    vertical-align:top;
+}
+
+.bottomBar{
+	width: 50%;
+    display: table;
+    table-layout: fixed;
+    border-spacing: 10px;
+    position: absolute;
+    bottom: 0px;
+
+}
+
+.textTag{
+    display: table-cell;
+    margin: 10px;
+    min-width: 150px;
+    border-radius: 5px;
+    font-size: 36px;
+    padding: 10px;
+    text-align:center;
+}
+
+.summaryText{
+    font-size: 18px;
+    font-family: sans-serif;
+    font-weight: 300;
+    margin-top: 50px;
+}
+
+
+
+.textTag:hover{
+	text-decoration: underline;
+	background: #00a1de;
+	border: 1px solid #00a1de;
+	color:white;
+/*	opacity: 0.5; */
+	border-radius:5px;
+	cursor:pointer;
+}
+
+.fp-controlArrow.fp-next {
+    right: 15px;
+    border-width: 38.5px 0 38.5px 34px;
+    border-color: transparent transparent transparent #00a1de;
+}
+
+.fp-controlArrow.fp-prev {
+     left: 15px;
+    width: 0;
+    border-width: 38.5px 34px 38.5px 0;
+    border-color: transparent #00a1de transparent transparent;
+}
+
+
+/* -------------------- Gantt tags ----------------------*/
+
+  .svg {
+    width:800px;
+    height:400px;
+    overflow: visible;
+    position:absolute;
+}
+
+.grid .tick {
+    stroke: lightgrey;
+    opacity: 0.3;
+    shape-rendering: crispEdges;
+}
+.grid path {
+      stroke-width: 0;
+}
+
+
+#tag {
+  color: white;
+  background: #FA283D;
+  width: 150px;
+  position: absolute;
+  display: none;
+  padding:3px 6px;
+  margin-left: -80px;
+  font-size: 11px;
+
+}
+
+
+
+#tag:before {
+  border: solid transparent;
+  content: ' ';
+  height: 0;
+  left: 50%;
+  margin-left: -5px;
+  position: absolute;
+  width: 0;
+  border-width: 10px;
+  border-bottom-color: #FA283D;
+  top: -20px;
+}
+
+
+    
+
+/*
+#gantt{ 
+  display: table-cell;
+	float: left;
+  margin: 20px;
+	margin-top:100px;
+	top:0px;
+}
+#section2_slide1{
+  position: relative;
+  display: table;
+}
+.white-popup {
+  position: abosulte;
+  background: #FFF;
+  padding: 20px;
+  width: auto;
+  max-width: 500px;
+  margin: 20px auto;
+  margin-top: 100px;
+}
+*/
+/* ------------------------------------------------------*/
+/*Fix for alignment in semantic UI */
+
+/*.ui.segment { 
+  margin:5px;
+}*/
+.fp-tableCell {
+  padding: 20px;
+  padding-right: 30px;
+}
+.pos-bottom{
+  position: absolute;
+  bottom: 0px;
+  margin:10px;
+}
+#ganttHistory{
+  overflow: auto;
+}
+
+.page{
+  height: 100%;
+}
+.ui.vertical.segment{
+  padding-right: 1rem;
+  padding-left: 1rem; 
+  padding-top: 4rem;
+}
+
+.ui.segment.mystack{
+  margin-top: 0;
+  margin-bottom: 0;
+  text-align: left;
+
+}
+.section {
+  text-align: left;
+  margin: 1rem; 
+  margin-right: 2rem; 
+}
+
+.ui.tab{
+  overflow: auto;
+}
+
+.ui.menu.fixed{
+  z-index: 2000; 
+}
+
+.ui.page.grid {
+  padding-left: 1%;
+  padding-right: 1%;
+}
+.ui.two.column.grid{
+  padding: 0.5rem;
+}
+.column.ui.raised.segment.mystack {
+    padding: 0;
+}
+.ui.small{
+  font-size: 0.8rem;
+}
+.ui.menu.nomargin{
+  margin:0; 
+} 
+.ui.divider{
+  text-transform: none;
+}
+.ui.selection.dropdown.borderless{
+  border:0;
+}
+.ui.right.floated.history{
+  padding-top: 0.1rem; 
+} 
+
+.ui.segment.nolrpad{
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.ui.attached.segment.smalllrpad{
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+#ganttList{
+  font-size: 10px;
+}
+
+
+#hexbin{
+  align-self: center;
+}
+
+#hexbinCol{
+  display: flex;
+  justify-content: center;
+}
+
+#ganttContainer{
+  height: 100%;
+}
+/* data table formatting */
+
+#data_table{
+    width: 100%;
+    height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    /*border: 1px solid red;*/
+}
+
+#data_table table{
+border-collapse: collapse;
+  /*font-size: 1rem;*/
+}
+
+
+
+.handsontable table th {
+    background-color: rgb(249, 250, 251);
+    font-size: 0.8rem;
+    vertical-align: middle;
+    text-align: left;
+    padding-top: 0.5rem; 
+    padding-bottom: 0.5rem; 
+    /*padding-right: 0.5rem;
+    padding-left: 0.5rem;*/
+    /*border: 0; */
+}
+.handsontable table td {
+    /*border: 0; */
+    padding-top: 0.5rem; 
+    padding-bottom: 0.5rem; 
+   /* padding-right: 0.5rem;
+    padding-left: 0.5rem;*/
+}
+.handsontable table tr {
+    border: 1px solid rgba(34,36,38,0.15);
+    border-radius: 15px;
+}
+.handsontable table{
+    font-size: 0.8rem;
+    /*padding: 0.5rem; */
+    /*border: 1px solid rgba(34,36,38,.15);*/
+    /*border-radius: 5px;*/
+
+}
+.htCore > tbody > tr:nth-child(even) > td {
+    background-color: rgba(0, 0, 50, 0.0196078);
+}
+
+.htCore > tbody > tr:nth-child(odd) > td {
+    background-color: #fff;
+}
+
+.handsontable > thead > th:first-child {
+    border-left-style: solid;
+    border-top-left-radius: 5px; 
+}
+.handsontable > thead > th:last-child {
+    border-right-style: solid;
+    border-bottom-right-radius: 5px; 
+}
+
+
+
