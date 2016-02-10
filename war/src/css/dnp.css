@@ -429,5 +429,33 @@ border-collapse: collapse;
     border-bottom-right-radius: 5px; 
 }
 
+#ganttHeader{
+  margin-bottom: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+.ui.table thead th{
+  /*background-color: #DB2828;*/
+  color: #DB2828;
+}
 
+#ganttContainer{
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+#ganttDataTable{
+ margin-top: 0;
+ padding-top: 0; 
+}
+
+.cursor{
+  cursor:pointer;
+}
+
+.ui.steps .step .planstep.title{
+  font-size: 0.9rem;
+}
+.ui.steps .step>.planstep.icon{
+ font-size: 1.5rem; 
+}
 

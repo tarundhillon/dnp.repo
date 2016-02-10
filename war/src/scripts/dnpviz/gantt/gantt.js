@@ -1,96 +1,37 @@
-  
-String.prototype.capitalize = function() {
-    return this.charAt(0).toUpperCase() + this.slice(1);
-}    
-    
-var dateFormat = d3.time.format("%Y-%m-%d");
 
 // global variables
-var timeScale,categories,catsUnfiltered,svgWidth,svgHeight,ganttHeight, ganttWidth,oneRow,svg,taskDetailsID, 
-    taskHeight,taskGap,topPad, sidePad,bottomPad,leftPad,rightPad,colorScale,taskFontSize;
-var iconLab,tasks;
-
-function sortByCategory(a,b){
-  if (a.type>b.type) return 1;
-  if (a.type<b.type) return -1;
-  return 0;
-}
-
-function autoDimension(tasks){
-  svgHeight = $("#ganttContainer").height()*0.9;
-  svgWidth  = $("#ganttContainer").width();
-  var noTasks = tasks.length; // manage conditions of 0 and max length
+var timeScale, categories, catsUnfiltered,
+    svgWidth, ganttAxisWidth,svgHeight, ganttHeight, ganttWidth,
+    oneRow, svg, dateFormat, xTicks,
+    taskDetailsID, taskHeight, taskGap,
+    topPad, sidePad, bottomPad, leftPad, rightPad,
+    colorScale, taskFontSize, iconLab, tasks,
+    ganttData, ganttSettings;
 
 
-  sidePad = svgWidth * 0.2;
-  bottomPad = svgHeight *0.05
-  topPad = 0;
-  rightPad = leftPad = svgWidth *0.01;
-
-
-  ganttHeight = svgHeight - bottomPad;
-  ganttWidth = svgWidth - leftPad - rightPad;
-
-  oneRow = ganttHeight/noTasks;
-  taskHeight = oneRow * 0.6;
-  taskGap = oneRow - taskHeight;
-  taskFontSize = '14px'; 
-
-  console.log("autoDimension: "+ svgWidth+"x"+svgHeight
-    +", tasks length:"+noTasks
-    +", oneRow:"+oneRow
-    +", barHeight:"+taskHeight
-    +", bottomPad:"+bottomPad
-    +", sidePad:"+sidePad
-    +", leftPad:"+leftPad
-    +", rightPad:"+rightPad
-    +", topPad:"+topPad);
-}
 
 // main function called by the user
-function makeGant(ganttID, tasks,detailsID){
-  var startTime = new Date();
-  this.tasks = tasks;
-  autoDimension(tasks);
+function makeGant(ganttData, ganttSettings){
 
-  // sort dataset 
-  tasks.sort(sortByCategory);
+  var startTime = moment();
+  //if(debug) console.log(arguments.callee.name+' :: startTime='+startTime);
 
+  this.tasks = ganttData;
+  //tasks.sort(sortByCategory);
 
-  // set the title 
-  $('#ganttOverviewLabel')
-    .html("Programme Overview  ("+ 
-      gmoment(parseInt(dataList.items[curDataListIndex].timeStamp)).fromNow() 
-      +")");
+  this.ganttSettings = ganttSettings;
+  dateFormat = d3.time.format(ganttSettings.dateFormat);
 
-  // w = 500;
-  // h = 500;
   
-  taskDetailsID = detailsID;
+  $(ganttSettings.containerID).html("");
+  autoDimension();
 
-  $("#"+ganttID).html("");
-
-  svg = d3.selectAll("#"+ganttID)
+  svg = d3.selectAll(ganttSettings.containerID)
   .append("svg")
   .attr("width",svgWidth+"px")
   .attr("height",svgHeight+"px")
   .attr("viewBox", "0 0 "+svgWidth+" "+svgHeight)
   .attr("preserveAspectRatio", "xMinYMin meet");
-
-var mouseCord = svg.append("text")
-  .text("0:0")
-  .attr("x", 0)
-  .attr("y", svgHeight - bottomPad/2)
-  .attr("text-anchor", "left")
-  .attr("font-size", 10);
-
-
-  svg.on("mouseover", function(e){
-    var x = Math.round(d3.mouse(this)[0]);
-    var y = Math.round(d3.mouse(this)[1]);
-    mouseCord.text(x+":"+y);
-
-  });
 
   //set up scales	
   timeScale = d3.time.scale()
@@ -98,11 +39,13 @@ var mouseCord = svg.append("text")
            d3.max(tasks, function(d) {return dateFormat.parse(d.endTime);})])
   .range([0,ganttWidth-sidePad]);
 
+  noMonths = moment(timeScale.domain()[1]).diff(moment(timeScale.domain()[0]),'months');
+  xTicks = calTimeScaleTicks(1, noMonths);
+  console.log('xTicks ::'+xTicks);
+
   //setup categories
-  categories = new Array();
-  for (var i = 0; i < tasks.length; i++){
-      categories.push(tasks[i].type);
-  }
+  categories = Array();
+  for (var i = 0; i < tasks.length; i++){categories.push(tasks[i].type);}
 
   catsUnfiltered = categories; //for vert labels
   categories = checkUnique(categories);
@@ -114,102 +57,62 @@ var mouseCord = svg.append("text")
 
   makeGrid();
   drawRects();
-  //vertLabels(taskGap, topPad, sidePad, taskHeight, colorScale);
-  drawDataTable(ganttID,tasks);
-  $('#ganttDataLoader').hide();
-  adjustHeight();
+
   $('#ganttLoader').hide();
 
-  console.log("gantt.js makegantt processed in "+(new Date() - startTime)/100+"secs");
+  //console.log("gantt.js makegantt processed in "+(new Date() - startTime)/100+"secs");
+  logTime(startTime,'Gantt Drawn');
 }
 
-
-function adjustHeight(){
-    var segHeight = $('#ganttDetailsMenu').parent().height();  
-    var segWidth = $('#ganttDetailsMenu').parent().width();  
-    $('#data_table').css('height',(segHeight-100)+'px');
+function calTimeScaleTicks(ticks, noMonths){
+  if(ganttAxisWidth > ((noMonths/ticks) *30) ) return ticks;
+  else return calTimeScaleTicks(++ticks, noMonths);
 }
 
-var datatable, pasteEvent =0;
-function drawDataTable(ganttID,tasks){
-  adjustHeight();
+function sortByCategory(a,b){
+  if (a.type>b.type) return 1;
+  if (a.type<b.type) return -1;
+  return 0;
+}
 
-  // e// $("#data_table").removeAttr('class');
-  var container = document.getElementById('data_table');
-  if(!datatable){
-    datatable = new Handsontable(container,{
-        data:tasks,
-        rowHeaders: false,
-        autoColumnSize: true,
-        colHeaders: true,
-        colHeaders: [
-                      "<i class='block layout icon' title='Category' ></i>",
-                      "<i class='tasks icon' title='Task' ></i>",
-                      "<i class='bullseye icon' title='Percentage completion' ></i>",
-                      "<i class='calendar icon' title='Start date' ></i>",                
-                      "<i class='calendar outline icon' title='End date' ></i>",                                     
-                      "<i class='comments icon' title='Comments' ></i>"
-                      ],
-        stretchH: 'all',
-        autoWrapRow: false,
-        minSpareRows: 1,
-        manualColumnResize: false,
-        //colWidths: ['95%'],
-        colWidths: ['15%','20%','5%','12%','12%','20%'],
-        //colWidths: ['120','120','30','80','80','190'],
-        columns: [
-          { data:'type', type: 'text'},
-          { data:'task', type: 'text'},
-          { data:'pert', type: 'text'},
-          // { data:'startTime', type: 'date', dateFormat: 'YYYY-MM-DD'},
-          // { data:'endTime', type: 'date', dateFormat: 'YYYY-MM-DD'},
-          { data:'startTime', type: 'text'},
-          { data:'endTime', type: 'text'},
-          { data:'details', type: 'text'}
-        ]
+function autoDimension(){
+  domSvgHeight = $(ganttSettings.containerID).height()*0.9;
+  calSvgHeight = ganttSettings.defTaskHeight * tasks.length + 5 * ganttSettings.defGanttPadding;
+  svgHeight = calSvgHeight < domSvgHeight ? calSvgHeight : domSvgHeight;
 
-    }); 
-    //console.log("datatable:"+ JSON.stringify($('#data_table')));
-  }else {
-    // needs to be visible else messes by the formatting.
-    $.tab('change tab','first');
-    $('#ganttDetailsMenu').tab({path:'first'});
-    $.tab('change tab','second');
+  //svgHeight = $(ganttSettings.containerID).height()*0.9;
+  svgWidth  = $(ganttSettings.containerID).width();
 
-  }  
+  var noTasks = tasks.length; // manage conditions of 0 and max length
+
+  sidePad = svgWidth * 0.2;
+  topPad = bottomPad = svgHeight *0.02;
+  rightPad = leftPad = svgWidth *0.02;
+
+
+  ganttHeight = svgHeight - bottomPad - topPad;
+  ganttWidth = svgWidth - leftPad - rightPad;
+  ganttAxisWidth = svgWidth - sidePad;
+  oneRow = ganttHeight/noTasks;
+  taskHeight = oneRow * 0.6;
+  taskGap = oneRow - taskHeight;
+  //taskFontSize = '14px'; // fix hard coding
+
+  if(taskHeight > ganttSettings.maxTaskFontSize) taskFontSize = ganttSettings.maxTaskFontSize+'px';
+  else taskFontSize = (taskHeight-1)+'px'; // fix hard coding
+
   
-  datatable.addHook('afterChange', function(changes, source) {
-    // make intelligent updates
-      //if(source == 'paste') 
 
-      console.log('Event paste '+pasteEvent++);
-      var jsonData = makeJSON(datatable.getData())
-      //console.log("afterchange fired ... "+ JSON.stringify(jsonData));
-      makeGant('mainGantt', jsonData, 'ganttDetaisTable');
-      //updateGantt(ganttID,jsonData);
-    }); 
-
-}
-
-function makeJSON(data){
-  var jsonList = [];
-  var json = {};  
-  for(i=0;i<data.length;i++){
-    json = {};  
-    if(data[i][0] && data[i][1]  && data[i][3] && data[i][4]) {
-      json.type = data[i][0];
-      json.task = data[i][1];
-      json.pert = data[i][2];
-      json.startTime = data[i][3];
-      json.endTime = data[i][4];
-      json.details = data[i][5];
-      json.timeStamp = data[i][6];
-      jsonList.push(json);
-    }
-    
-
-  }
-  return jsonList;
+  if(debug) console.log("autoDimension: "+ svgWidth+"x"+svgHeight+"\n"+
+    ", tasks length:"+noTasks+"\n"+
+    ", oneRow:"+oneRow+"\n"+
+    ", taskGap:"+taskGap+"\n"+
+    ", barHeight:"+taskHeight+"\n"+
+    ", bottomPad:"+bottomPad+"\n"+
+    ", sidePad:"+sidePad+"\n"+
+    ", leftPad:"+leftPad+"\n"+
+    ", rightPad:"+rightPad+"\n"+
+    ", topPad:"+topPad);
 }
 
 
@@ -244,8 +147,9 @@ function drawRects(){
      })
      .attr("stroke", "none")
      .attr("fill", function(d,i){
-        return d3.rgb(colorScale(i));
+        return getColor('cat',i);
      })
+     .attr("id",function(d){return d.id;})
      .attr("opacity", 0.2);
 
 var bigRectLabels = svg.append("g")
@@ -253,17 +157,27 @@ var bigRectLabels = svg.append("g")
     .data(catKeys)
     .enter()
     .append("text")
+    .attr('font-size',taskFontSize)
     .text(function(d){
-        return d;
+      return d;
+      //return d.replaceAll(' ','\n\r');
     })
     .attr("x",leftPad)
     .attr("y",function(d,k){
-      var mY = 0;
+      var mY = topPad/2;
       for(var i=0; i<k; i++)
         mY += cats[catKeys[i]] * oneRow ;
-      mY += cats[d]*oneRow/2;   
+      mY += cats[d]*oneRow/2;
         return mY;
+    })
+    .attr("cursor","pointer")
+    .on('click',function(d){
+      if(!ganttData.taskFocus) ganttSettings.catOnClick(d);
+      else return "";
+      
     });
+
+
 
  var rectangles = svg.append('g')
      .selectAll("rect")
@@ -273,85 +187,197 @@ var bigRectLabels = svg.append("g")
     drawTasks(rectangles,'task');
     drawTasks(rectangles,'pert');
     drawTaskLabels(rectangles);
-        
+    //drawTasksAndLabels(rectangles,'task');    
 
 }
 
-function drawTasks(rectangles,type){
-  rectangles.append("rect")
-   .attr("rx", 3)
-   .attr("ry", 3)
+function  getColor(type,i){
+  color = [];
+  if(type=='task') color = ganttSettings.taskColor;
+  else color = ganttSettings.catColor;
+
+  if(i%2) return color[0];
+  else if(color.length > 1 ) return color[1];
+  else return color[0];
+
+}
+
+function drawTasksAndLabels(rectangles,type){
+  var group = rectangles.append("g");
+
+  group.append("rect")
+   .attr("rx", 1)
+   .attr("ry", 1)
+   .attr("id",function(d){
+      var id = 'ID';
+      if(type == 'pert') id = 'PID';
+      return id+d.id;
+   })
    .attr("x", function(d){
       var mX = timeScale(dateFormat.parse(d.startTime)) + sidePad;
       return mX;
     })
    .attr("y", function(d, i){
       var mY = i*oneRow + taskGap/2;
-      if(d.startTime == d.endTime) return mY + taskHeight/4;
+      if(d.startTime == d.endTime) return mY + taskHeight/2 - taskGap/2;
       return mY;
     })
    .attr("width", function(d){
-      var width = 0;    
-      if(d.startTime == d.endTime) width = taskHeight/2;
-      else width = (timeScale(dateFormat.parse(d.endTime))-timeScale(dateFormat.parse(d.startTime)));; 
-      if(type == 'pert') width = width * (d.pert/100); 
+      var width = 0;
+      if(d.startTime == d.endTime) width = taskHeight * 0.75;
+      else width = (timeScale(dateFormat.parse(d.endTime))-timeScale(dateFormat.parse(d.startTime)));
+      if(type == 'pert' && d.pert !== undefined) width = width * (d.pert/100);
       return width;
    })
-   .attr("height", function(d){ 
-      if(d.startTime == d.endTime) return taskHeight/2;
+   .attr("height", function(d){
+      if(d.startTime == d.endTime) return taskHeight * 0.75;
       return taskHeight;
     })
    .attr("stroke", "none")
    .attr("cursor","pointer")
    .attr("opacity",function(){
       if(type == 'pert') return "1";
-      return "0.6";
+      return "0.4";
    })
    .attr("fill", function(d){
       for (var i = 0; i < categories.length; i++){
-          if (d.type == categories[i]){
-            return d3.rgb(colorScale(i));
-          }
+          if (d.type == categories[i]) return getColor('task',i);
       }
     })
    .attr("transform",function(d){
       var mX = timeScale(dateFormat.parse(d.startTime)) + sidePad;
-      var mY = d3.select(this).attr('y') - d3.select(this).attr('height')
+      var mY = d3.select(this).attr('y') - d3.select(this).attr('height');
       if(d.startTime == d.endTime) return "rotate(45,"+mX+","+mY+")";
-      else return "rotate(0)"          
+      else return "rotate(0)";
+   });
+
+   group.append("text")
+  .text(function(d){
+    if(d.pert > 0 ) return d.task +' '+d.pert+'%';
+    else return d.task;
+  })
+  .attr("height",taskHeight)
+  .attr("text-anchor","left")
+  .attr("text-height", function(d){
+      var taskBox = d3.select("rect[id='ID"+d.id+"']").node().getBBox();
+      return taskBox.height;
+  })
+  .attr("transform",function(d){
+    var taskBox = d3.select("rect[id='ID"+d.id+"']").node().getBBox();
+    //mX = taskBox.x + taskBox.width * 0.05;
+    mX = taskBox.x;
+    mY = taskBox.y + taskBox.height *0.75; //+ this.getBBox().height/2;
+    return "translate("+mX+","+mY+")";
+  })
+  
+  // .attr("x", function(d){
+  //   var taskBox = d3.select("rect[id='ID"+d.id+"']").node().getBBox();
+  //   return taskBox.x + taskBox.width * 0.05;
+  //   // var mX = 0;
+  //   // if(d.startTime == d.endTime)
+  //   //   mX = timeScale(dateFormat.parse(d.startTime)) + sidePad;
+  //   // else
+  //   //   mX = sidePad + timeScale(dateFormat.parse(d.startTime)) + sidePad * 0.02;
+  //   // return mX;
+  // })
+  // .attr("y", function(d,i){
+  //   var taskBox = d3.select("rect[id='ID"+d.id+"']").node().getBBox();
+  //   return taskBox.y;
+
+  //     // var mY = i*oneRow  + taskHeight;
+  //     // if(d.startTime == d.endTime) return mY + taskHeight/2 - taskGap/2;
+  //     // return mY;
+  // })
+  .attr("font-size", taskFontSize)
+  .attr("font-style",'oblique')
+  .attr("cursor","pointer")
+  .attr("fill", "#333")
+  .on('click', function(d){
+    if(!ganttData.taskFocus) ganttSettings.taskOnClick(d);
+    else return "";
+  });
+
+}
+
+function drawTasks(rectangles,type){
+  rectangles.append("rect")
+   .attr("rx", 1)
+   .attr("ry", 1)
+   .attr("x", function(d){
+      var mX = timeScale(dateFormat.parse(d.startTime)) + sidePad;
+      return mX;
+    })
+   .attr("y", function(d, i){
+      var mY = i*oneRow + taskGap/2;
+      if(d.startTime == d.endTime) return mY + taskHeight/2 - taskGap/2;
+      return mY;
+    })
+   .attr("width", function(d){
+      var width = 0;
+      if(d.startTime == d.endTime) width = taskHeight * 0.75;
+      else width = (timeScale(dateFormat.parse(d.endTime))-timeScale(dateFormat.parse(d.startTime)));
+      if(type == 'pert' && d.pert !== undefined) width = width * (d.pert/100);
+      return width;
    })
-   .on('click', taskOnClick);
+   .attr("height", function(d){
+      if(d.startTime == d.endTime) return taskHeight * 0.75;
+      return taskHeight;
+    })
+   .attr("stroke", "none")
+   .attr("cursor","pointer")
+   .attr("id",function(d,i){
+      var id = 'ID';
+      if(type == 'pert') id = 'PID';
+      return id+i;
+   })
+   .attr("opacity",function(){
+      if(type == 'pert') return "1";
+      return "0.4";
+   })
+   .attr("fill", function(d){
+      for (var i = 0; i < categories.length; i++){
+          if (d.type == categories[i]) return getColor('task',i);
+      }
+    })
+   .attr("transform",function(d){
+      var mX = timeScale(dateFormat.parse(d.startTime)) + sidePad;
+      var mY = d3.select(this).attr('y') - d3.select(this).attr('height');
+      if(d.startTime == d.endTime) return "rotate(45,"+mX+","+mY+")";
+      else return "rotate(0)";
+   });
 
 }
 
 function drawTaskLabels(rectangles){
+  var mX = 0;
   rectangles.append("text")
   .text(function(d){
     if(d.pert > 0 ) return d.task +' '+d.pert+'%';
     else return d.task;
   })
-  .attr("x", function(d){
-    if(d.startTime == d.endTime){
-      var mX = timeScale(dateFormat.parse(d.startTime)) + sidePad;
-      return mX;
-    } 
-    return (timeScale(dateFormat.parse(d.endTime))-timeScale(dateFormat.parse(d.startTime)))/2 + timeScale(dateFormat.parse(d.startTime)) + sidePad;
+  .attr("text-height", function(d,i){
+      var taskBox = d3.select("rect[id='ID"+i+"']").node().getBBox();
+      return taskBox.height;
   })
-  .attr("y", function(d,i){
-    var mY = i*oneRow;
-    if(d.startTime == d.endTime) return mY + taskGap/2 + taskHeight;
-    return mY + taskGap/2 + taskHeight/2;
+  .attr("transform",function(d,i){
+    var taskBox = d3.select("rect[id='ID"+i+"']").node().getBBox();
+
+    mX = taskBox.x + taskBox.width * 0.02;
+    
+    if(mX + this.getBBox().width > svgWidth) mX = mX - this.getBBox().width * 0.85; // manage overflow
+
+    mY = taskBox.y + taskBox.height *0.75;
+    return "translate("+mX+","+mY+")";
   })
   .attr("font-size", taskFontSize)
-  .attr("text_type","taskFontSize")
-  .attr("text-anchor", function(d){ 
-    if(d.startTime == d.endTime) return "left";
-    else return "middle";
-  })
-  .attr("text-height", taskHeight)
+  .attr("font-style",'oblique')
+  //.attr("text-height", taskHeight)
   .attr("cursor","pointer")
   .attr("fill", "#333")
-  .on('click', taskOnClick);
+  .on('click', function(d){
+    if(!ganttData.taskFocus) ganttSettings.taskOnClick(d);
+    else return "";
+  });
 
 }
 
@@ -392,17 +418,19 @@ function makeGrid(){
   var xAxis = d3.svg.axis()
       .scale(timeScale)
       .orient('bottom')
-      .ticks(d3.time.week, 1)
-      .tickSize(-svgHeight+topPad+20, 0, 0)
+      //.ticks(d3.time.month, 3)
+      .ticks(d3.time.month, xTicks)
+      
+      .tickSize(-svgHeight, 0, 0)
       .tickFormat(d3.time.format('%d %b'));
 
   var grid = svg.append('g')
       .attr('class', 'grid')
-      .attr('transform', 'translate(' +sidePad + ', ' + (svgHeight - bottomPad/2) + ')')
+      .attr('transform', 'translate(' +sidePad + ', ' + (svgHeight - bottomPad - topPad) + ')')
       .call(xAxis)
-      .selectAll("text")  
+      .selectAll("text")
               .style("text-anchor", "middle")
-              .attr("fill", "#000")
+              .attr("fill", "#999")
               .attr("stroke", "none")
               .attr("font-size", 10)
               .attr("dy", "1em");
@@ -410,48 +438,7 @@ function makeGrid(){
 
 }
 
-function vertLabels(){
-  var numOccurances = new Array();
-  var prevGap = 0;
 
-  for (var i = 0; i < categories.length; i++){
-    numOccurances[i] = [categories[i], getCount(categories[i], catsUnfiltered)];
-  }
-
-  var axisText = svg.append("g") //without doing this, impossible to put grid lines behind text
-   .selectAll("text")
-   .data(numOccurances)
-   .enter()
-   .append("text")
-   .text(function(d){
-    //return d[0].capitalize();
-    return d[0];
-   })
-   .attr("x", 10)
-   .attr("y", function(d, i){
-    if (i > 0){
-        for (var j = 0; j < i; j++){
-          prevGap += numOccurances[i-1][1];
-         // console.log(prevGap);
-          return d[1]*theGap/2 + prevGap*theGap + topPad;
-        }
-    } else{
-    return d[1]*theGap/2 + topPad;
-    }
-   })
-   .attr("font-size", 14)
-   .attr("text-anchor", "start")
-   .attr("text-height", 14)
-   .attr("fill", function(d){
-    for (var i = 0; i < categories.length; i++){
-        if (d[0] == categories[i]){
-        //  console.log("true!");
-          return d3.rgb(theColorScale(i)).darker();
-        }
-    }
-   });
-
-}
 
 //from this stackexchange question: http://stackoverflow.com/questions/1890203/unique-for-arrays-in-javascript
 function checkUnique(arr) {
@@ -478,18 +465,5 @@ function getCount(word, arr) {
     return getCounts(arr)[word] || 0;
 }
 
-// ---- Manage the gantt setting 
-    $("#ganttSetting").click(function(){
-      $("#ganttSettingModal").modal('show');
-    });
-
-    $('[change-font-size]').click(function(){
-      var size = $(this).attr('change-font-size');
-      d3.selectAll("[text_type='label']").attr('font-size',size);
-    });
-
-    
-
-    // ----- End the Gantt setting  
 
 

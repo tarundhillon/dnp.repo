@@ -1,3 +1,7 @@
 /gwt-unitCache/
 /packages/
 /nodejs/
+/npm-debug.log
+/.DS_Store
+/.gitignore
+/.settings/

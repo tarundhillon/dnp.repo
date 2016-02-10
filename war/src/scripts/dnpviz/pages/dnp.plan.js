@@ -6,56 +6,82 @@ console.log("dnp.plan.js configuring require.js");
 
 requirejs.config({
 		baseUrl: '/src/scripts/',
-		paths: { 
+		paths: {
 				// packages
 				alertify: 'js/alertify.min',
 				d3: 'js/d3.min',
 				googleapi: 'js/client',
 				handsontable: 'js/handsontable.min',
-				jquery: 'js/jquery.min',				
+				jquery: 'js/jquery.min',
 				moment: 'js/moment.min',
 				pikaday: 'js/pikaday',
-				semanticui: 'js/semantic.min',
+				semui: 'js/semantic.min',
 				zeroclipboard: 'js/ZeroClipboard.min',
 				
+				tabletop: 'js/tabletop', // need to merger these dependencies
+				underscore: 'js/underscore-min',
+				backbone: 'js/backbone-min',
+
+				tabletopSync:'js/backbone.tabletopSync',
 
 				// code files
-				//d3hexbin:'dnpviz/hexbin/d3.hexbin.min',
 				gantt:'dnpviz/gantt/gantt',
-				//hexbin:'dnpviz/hexbin/hexbin',
-				projcontrol: 'dnpviz/pages/projcontrol'	
-
-			 }
+				projcontrol: 'dnpviz/pages/projcontrol',
+				dnphelper: 'dnp.helper'
+		}
 		 
-}); 
-
-
-var debug = true, 
-	localhost = window.location.href.indexOf("127.0.0.1") > -1,
-	alertify;
-
-
-require(['jquery','d3','alertify','googleapi'], 
-		function ($, d3, alertify_local,googleapi){
-	alertify = alertify_local;
-	console.log("Required dependencies loaded");
-	var semanticui = require(['semanticui'],function(semanticui){
-		$('#sampledd').dropdown();
-	});
-	if(localhost) { 
-		if(debug) alertify.message("Local host detected");		
-		console.log("Local host detected");
-	}	
-
-	// configure and notify alerts 		
-	alertify.defaults.notifier.position = 'bottom-right'; 
- 
-	 // initialise fullpage
-	 $(document).ready(function() {
-	 	
-		var projcontrol = require(['projcontrol'], function (projcontrol){	
-		alertify.message("Project control loaded",1);
-		});
-	}); 
- 
 });
+
+
+var debug = true, moment, ganttData, ganttSetting,tabletop;
+
+
+require(['jquery','moment','dnphelper','d3','alertify','projcontrol','tabletop'],
+		function ($, moment ,dhelp, d3, alertify, projcontrol, tabletop){
+	
+	this.moment = moment;
+	this.tabletop = tabletop;
+	setupPage(alertify);
+
+	ganttSetting = {
+		width: 'auto',
+		sheetName: 'Business Transformation',
+		sheetKey: '1myBKwg2F1VLwy7P8RFKuGWEdvrV9Yu7gq-3k4H0Mwlk',
+		simpleSheet: true,
+		containerID: '#ganttContainer',
+		dataTableID: '#ganttDataTable',
+		dateFormat: '%d/%m/%Y',
+		maxTaskFontSize: 14,
+		defTaskHeight: 25,
+		maxTaskHeight: 30,
+		defGanttPadding: 40,
+		defCarPadding: 20,
+		taskColor: ['#00B9FA'],
+		catColor: ['#F0F0F0','#DB2828'],
+		inDateFormat: 'DD/MM/YYYY',
+		//taskColor: ['#00B9FA','#DB2828'],
+		//catColor: ['#00B9FA','#DB2828'],
+		taskOnClick: ganttTaskOnClick,
+		catOnClick: ganttCatOnClick
+	};
+	
+	//	fetch data from google sheet and request gantt
+	fetchDataFromGoogleSheet(ganttSetting);
+	
+});
+
+function fetchDataFromGoogleSheet(ganttSetting) {
+	var startTime = moment();
+	tabletop.init( {
+		key : ganttSetting.sheetKey,
+		simpleSheet: ganttSetting.simpleSheet,
+		callback: function(data, tabletop) {
+			logTime(startTime,'google datasheet fetch');
+			if(debug) console.log(data.length+" records fetched from google sheet");
+			ganttData = prepareGanttData(data);
+			makeGanttForWeek();
+		}
+		
+	});
+}
+

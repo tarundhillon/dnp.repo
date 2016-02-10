@@ -1,2 +1,5 @@
 /.DS_Store
+/META-INF/
+/digital/
 /log4j.properties
+/.gitignore
