@@ -459,3 +459,42 @@ border-collapse: collapse;
  font-size: 1.5rem; 
 }
 
+.ui.mini.header{
+  font-size: 0.7rem;
+}
+.ui.grid.funcMap>.column:not(.row), .ui.grid.funcMap>.row>.column{
+  padding-left: 0.1rem;
+  padding-right: 0.1rem;
+}
+
+.ui.mini.funcItem{
+  margin-top: 0.1rem;
+  margin-bottom: 0.1rem;
+  text-align: center;
+  vertical-align: middle;
+  width: 100%;
+  min-height: 2rem;
+  padding-top: 0.5rem;
+  padding-right: 0.5rem;
+
+}
+
+.ui.mini.header.funcItem{
+  min-height: 3rem;
+}
+.ui.red.segment.funcItem{
+  padding-left: 0.3rem;
+  padding-right: 0.3rem;
+  padding-bottom: 0.3rem;
+}
+.ui.head.segment{
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.ui.small.table.progOver{
+  font-size: 0.7rem; 
+  color:#000;
+}

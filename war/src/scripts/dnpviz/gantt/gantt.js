@@ -184,10 +184,18 @@ var bigRectLabels = svg.append("g")
      .data(tasks)
      .enter();
 
-    drawTasks(rectangles,'task');
-    drawTasks(rectangles,'pert');
-    drawTaskLabels(rectangles);
-    //drawTasksAndLabels(rectangles,'task');    
+var taskGroup = rectangles.append('g');
+    drawTasks(taskGroup,'task');
+    drawTasks(taskGroup,'pert');
+    drawTaskLabels(taskGroup);
+    
+
+
+
+    // drawTasks(rectangles,'task');
+    // drawTasks(rectangles,'pert');
+    // drawTaskLabels(rectangles);
+    // //drawTasksAndLabels(rectangles,'task');    
 
 }
 
@@ -299,19 +307,20 @@ function drawTasksAndLabels(rectangles,type){
 
 }
 
-function drawTasks(rectangles,type){
-  rectangles.append("rect")
+function drawTasks(taskGroup,type){
+  taskGroup.append("rect")
    .attr("rx", 1)
    .attr("ry", 1)
-   .attr("x", function(d){
-      var mX = timeScale(dateFormat.parse(d.startTime)) + sidePad;
-      return mX;
-    })
-   .attr("y", function(d, i){
-      var mY = i*oneRow + taskGap/2;
-      if(d.startTime == d.endTime) return mY + taskHeight/2 - taskGap/2;
-      return mY;
-    })
+
+   // .attr("x", function(d){
+   //    var mX = timeScale(dateFormat.parse(d.startTime)) + sidePad;
+   //    return mX;
+   //  })
+   // .attr("y", function(d, i){
+   //    var mY = i*oneRow + taskGap/2;
+   //    if(d.startTime == d.endTime) return mY + taskHeight/2 - taskGap/2;
+   //    return mY;
+   //  })
    .attr("width", function(d){
       var width = 0;
       if(d.startTime == d.endTime) width = taskHeight * 0.75;
@@ -323,6 +332,16 @@ function drawTasks(rectangles,type){
       if(d.startTime == d.endTime) return taskHeight * 0.75;
       return taskHeight;
     })
+    .attr("transform",function(d,i){
+      var mX = timeScale(dateFormat.parse(d.startTime)) + sidePad;
+      var mY = i*oneRow + taskGap/2;
+      var rotate = 0;
+      if(d.startTime == d.endTime){
+        mY = mY  - taskGap/2;
+        rotate = 45;
+      }
+      return "translate("+mX+","+mY+") rotate("+rotate+")";
+   })
    .attr("stroke", "none")
    .attr("cursor","pointer")
    .attr("id",function(d,i){
@@ -338,13 +357,13 @@ function drawTasks(rectangles,type){
       for (var i = 0; i < categories.length; i++){
           if (d.type == categories[i]) return getColor('task',i);
       }
-    })
-   .attr("transform",function(d){
-      var mX = timeScale(dateFormat.parse(d.startTime)) + sidePad;
-      var mY = d3.select(this).attr('y') - d3.select(this).attr('height');
-      if(d.startTime == d.endTime) return "rotate(45,"+mX+","+mY+")";
-      else return "rotate(0)";
-   });
+    });
+       // .attr("transform",function(d){
+   //    var mX = timeScale(dateFormat.parse(d.startTime)) + sidePad;
+   //    var mY = d3.select(this).attr('y') - d3.select(this).attr('height');
+   //    if(d.startTime == d.endTime) return "rotate(45,"+mX+","+mY+")";
+   //    else return "rotate(0)";
+   // });
 
 }
 
@@ -355,18 +374,38 @@ function drawTaskLabels(rectangles){
     if(d.pert > 0 ) return d.task +' '+d.pert+'%';
     else return d.task;
   })
+  .attr('type','label')
+  .attr("id",function(d,i){
+    return i;
+  })
   .attr("text-height", function(d,i){
       var taskBox = d3.select("rect[id='ID"+i+"']").node().getBBox();
       return taskBox.height;
   })
   .attr("transform",function(d,i){
-    var taskBox = d3.select("rect[id='ID"+i+"']").node().getBBox();
-
-    mX = taskBox.x + taskBox.width * 0.02;
+    var taskBox = d3.select("rect[id='ID"+i+"']");
+    //mX = taskBox.x + taskBox.width * 0.02;
     
-    if(mX + this.getBBox().width > svgWidth) mX = mX - this.getBBox().width * 0.85; // manage overflow
+    tX = d3.transform(taskBox.attr("transform")).translate[0];
+    tY = d3.transform(taskBox.attr("transform")).translate[1];
+    tH = parseInt(taskBox.attr("height"),10);
+    tW = parseInt(taskBox.attr("width"),10);
 
-    mY = taskBox.y + taskBox.height *0.75;
+    var mX = tX + tW *0.05;
+    if(mX + this.getBBox().width > svgWidth){
+      //while(mX+this.getBBox().width >= tX){
+        console.log(d.task+' mX::'+ mX + " width="+this.getBBox().width + ' taskBox.x'+tX);
+        //mX = mX - this.getBBox().width;
+        mX -= this.getComputedTextLength();
+      //}
+    }
+    
+    if(d.startTime == d.endTime){
+      mY = tY + tH;
+      mX += tW;
+    }
+    else mY = tY + tH *0.80;
+
     return "translate("+mX+","+mY+")";
   })
   .attr("font-size", taskFontSize)
@@ -378,6 +417,53 @@ function drawTaskLabels(rectangles){
     if(!ganttData.taskFocus) ganttSettings.taskOnClick(d);
     else return "";
   });
+
+   // d3.selectAll("text[type='label']")
+   // .attr("transform",function (d,i){
+   //    labelBox = this.getBoundingClientRect();
+   //    mX = labelBox.left;
+   //    mY = labelBox.top;
+   //    if(labelBox.right > svgWidth){
+        
+   //      while(mX + labelBox.width > svgWidth){
+   //        mX -= labelBox.width * 0.01;
+   //      }
+        
+   //    }
+   //    return "translate("+mX+","+mY+")";
+   // });
+/*
+
+<text type="label" id="11" text-height="13.6650390625" transform="translate(697.5659802246093,265.3292236328125)" font-size="12.665024000000003px" font-style="oblique" cursor="pointer" fill="#333">Infrastructure Testing - Shakedown, Penetration 51%</text>
+<rect rx="1" ry="1" x="1022.9420750821928" y="255.08044800000005" width="41.409543390167386" height="13.665024000000003" stroke="none" cursor="pointer" id="PID11" opacity="1" fill="#00B9FA" transform="rotate(0)"></rect>
+
+
+
+
+*/
+
+
+
+
+  // d3.selectAll("text")
+  // .attr("transform",function(d,i){
+  //   var rect = d3.select("rect[id='ID"+i+"']").node();
+  //   if(rect != null){
+  //   var taskBox = d3.select("rect[id='ID"+i+"']").node().getBBox();
+
+  //   mX = taskBox.x + taskBox.width * 0.02;
+    
+  //    if(mX + this.getBBox().width > svgWidth) mX = taskBox.x - this.getBBox().x;
+  //   //   while(mX +this.getBBox().width > taskBox.x){
+  //   //     //console.log(d.task+' mX +this.getBBox().width::'+ (mX +this.getBBox().width));
+  //   //     mX = mX - 1;
+  //   //   }
+  //   // }
+
+  //   mY = taskBox.y + taskBox.height *0.75;
+  //   return "translate("+mX+","+mY+")";
+  // } return "";
+  // });
 
 }
 
@@ -418,9 +504,7 @@ function makeGrid(){
   var xAxis = d3.svg.axis()
       .scale(timeScale)
       .orient('bottom')
-      //.ticks(d3.time.month, 3)
       .ticks(d3.time.month, xTicks)
-      
       .tickSize(-svgHeight, 0, 0)
       .tickFormat(d3.time.format('%d %b'));
 
@@ -435,6 +519,16 @@ function makeGrid(){
               .attr("font-size", 10)
               .attr("dy", "1em");
 
+  var today = moment();
+  mX = timeScale(dateFormat.parse(moment().format(ganttSettings.momentDateFormat))) + sidePad;
+
+  svg.append("line")          // attach a line
+    .style("stroke", "red")  // colour the line
+    .style("stroke-dasharray", ("3, 3"))
+    .attr("x1", mX)     // x position of the first end of the line
+    .attr("y1", 0)      // y position of the first end of the line
+    .attr("x2", mX)     // x position of the second end of the line
+    .attr("y2", svgHeight - bottomPad-topPad);
 
 }
 

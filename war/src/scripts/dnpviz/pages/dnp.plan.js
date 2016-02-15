@@ -43,6 +43,10 @@ require(['jquery','moment','dnphelper','d3','alertify','projcontrol','tabletop']
 	this.tabletop = tabletop;
 	setupPage(alertify);
 
+	$('.dataSource').checkbox({
+		onChange: changeDataSource
+	});
+
 	ganttSetting = {
 		width: 'auto',
 		sheetName: 'Business Transformation',
@@ -51,6 +55,7 @@ require(['jquery','moment','dnphelper','d3','alertify','projcontrol','tabletop']
 		containerID: '#ganttContainer',
 		dataTableID: '#ganttDataTable',
 		dateFormat: '%d/%m/%Y',
+		momentDateFormat: 'DD/MM/YYYY',
 		maxTaskFontSize: 14,
 		defTaskHeight: 25,
 		maxTaskHeight: 30,
@@ -72,6 +77,8 @@ require(['jquery','moment','dnphelper','d3','alertify','projcontrol','tabletop']
 
 function fetchDataFromGoogleSheet(ganttSetting) {
 	var startTime = moment();
+	if(debug) console.log("Fetching data from "+ganttSetting.sheetName+":"+ganttSetting.sheetKey);
+	showLoader(ganttSetting.containerID);
 	tabletop.init( {
 		key : ganttSetting.sheetKey,
 		simpleSheet: ganttSetting.simpleSheet,
@@ -80,8 +87,15 @@ function fetchDataFromGoogleSheet(ganttSetting) {
 			if(debug) console.log(data.length+" records fetched from google sheet");
 			ganttData = prepareGanttData(data);
 			makeGanttForWeek();
+			hideLoader();
 		}
 		
 	});
 }
 
+var changeDataSource = function (){
+			console.log('sheet ID:'+ this.nextElementSibling.innerHTML +','+this.value);
+			ganttSetting.sheetName = this.nextElementSibling.innerHTML;
+			ganttSetting.sheetKey = this.value;
+			fetchDataFromGoogleSheet(ganttSetting);
+};

@@ -34,7 +34,7 @@ function makeGanttForWeek(week){
 function makeGanttDataTable(ganttData ,ganttSetting){
 
 	html="<div class='ui grid'><div class='computer only row'>";
-	html+="<span class='ui small red header left floated'>Summary : "+ganttData.week+"</span>";
+	html+="<span class='ui small red header left floated'>Data Table : "+ganttData.week+"</span>";
 	html+="<table class='ui small red compact striped table'>";
 	html+="<thead>";
 	html+="<tr >";
@@ -193,15 +193,8 @@ var ganttTaskOnClick = function (task){
 		obj.week = weekTask[0].category;
 		obj.week = weekTask[0].week;
 	}
-	else {
-		// insert empty row to deleted value 
-		obj = {};
-		obj.startTime ='';
-		obj.endTime ='';
-		obj.pert = 0;
-		obj.type = week;
-		obj.week = week;
-	}
+	else obj = ganttEmptyObj(week);
+
 	taskData.push(obj);
   });
   ganttData.data = taskData;
@@ -222,15 +215,8 @@ var ganttCatOnClick = function (category){
 			obj.week = weekTask.category;
 			obj.week = week;
 		}
-		else {
-			// insert empty row to deleted value 
-			obj = {};
-			obj.startTime ='';
-			obj.endTime ='';
-			obj.pert = 0;
-			obj.type = week;
-			obj.week = week;
-		}
+		else obj = ganttEmptyObj(week);
+
 		taskData.push(obj);
 	});
   });
@@ -239,6 +225,16 @@ var ganttCatOnClick = function (category){
   makeGanttForWeek('task');
 };
 
-
+function ganttEmptyObj(week){
+	var obj = {};
+	obj.task = '';
+	obj.startTime ='';
+	obj.endTime ='';
+	obj.pert = 0;
+	obj.type = week;
+	obj.week = week;
+	obj.details = '';
+	return obj;
+}
 
 	
