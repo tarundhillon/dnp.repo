@@ -1,8 +1,8 @@
 @import url('./modules/jquery.fullPage.css');
 @import url('./modules/alertify.min.css');
-@import url('./modules/handsontable.min.css');
 @import url('./modules/semantic.min.css');
-@import url('./modules/pikaday.css');
+@import url('./modules/swiper.min.css');
+
 
 
 
@@ -65,9 +65,14 @@ h3{
 }
 
 
+a.white{
+  color:white;
+  text-decoration: underline;
+}
 
-
-
+a.white:hover{
+  color:#f0f0f0;
+}
 
 #header {
 	position: fixed;
@@ -284,9 +289,14 @@ h3{
   overflow: auto;
 }
 
-.page{
-  height: 100%;
+@media only screen and (min-width:800px) {
+  .page{
+    height: 80%;
+  }
+
+
 }
+
 .ui.vertical.segment{
   padding-right: 1rem;
   padding-left: 1rem; 
@@ -363,9 +373,9 @@ h3{
   justify-content: center;
 }
 
-#ganttContainer{
+/*#ganttContainer{
   height: 100%;
-}
+}*/
 /* data table formatting */
 
 #data_table{
@@ -442,13 +452,15 @@ border-collapse: collapse;
 #ganttContainer{
   margin-bottom: 0;
   padding-bottom: 0;
+  height: auto;
+  min-height: 100px;
 }
 #ganttDataTable{
  margin-top: 0;
  padding-top: 0; 
 }
 
-.cursor{
+a, .cursor{
   cursor:pointer;
 }
 
@@ -497,4 +509,121 @@ border-collapse: collapse;
 .ui.small.table.progOver{
   font-size: 0.7rem; 
   color:#000;
+}
+
+// pcOverview css entries
+
+.axis text {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.hexagon {
+  fill: none;
+  stroke: #000;
+  stroke-width: .5px;
+}
+
+.menupadded.row{
+  margin-top: 3rem;
+}
+
+/* timeline class */
+.topRect{
+  stroke-dasharray: 50,150; 
+  stroke-dashoffset:0;
+}
+.bottomRect{
+  stroke-dasharray: 50,100; 
+  stroke-dashoffset:50;
+}
+
+
+.mappath {
+  stroke: white;
+  stroke-width: 0.25px;
+  fill: #C0C0C0;
+}
+
+.linkBox{
+  border: 0.2rem solid white;
+  border-radius: 0.2rem;
+  cursor: pointer;
+}
+
+.linkBox:hover{
+  border: 0.1rem solid white;
+  cursor: pointer;
+}  
+
+.itemBox{
+  display: block;
+  height: 10rem;
+  min-width: 7rem;
+  border-spacing: 0.3rem;
+  cursor: pointer;
+  opacity: 0.9;
+  text-align: center;
+  transition: opacity 0.3s ease-in;
+}
+
+.itemBoxLabel{
+  margin-top: 1rem;
+}
+.itemBox:hover{
+  opacity: 1;
+}
+
+
+.ui.grid>.nopad.column{
+  padding: 0.1rem;
+}
+
+/*Swiper active bullet color */
+.swiper-pagination-bullet-active {
+    opacity: 1;
+    background: #DB2828;
+}
+
+
+.textList{
+    list-style-type: square;
+    /*color: #DB2828; */
+    color:black;
+}
+
+.no.bullet{
+  list-style-type: none;
+}
+/*.ui.toppad.column.grid{
+  padding-top: 5rem;
+}*/
+
+
+/* TOM CSS*/
+.ui.segment.tomBox{
+    padding: 0.5rem;
+    min-height: 3rem;
+    vertical-align: middle;
+    line-height: 1rem;
+    overflow: hidden;
+    font-size: 0.8rem;
+}
+
+.lightGreyBack{
+  background-color: #f0f0f0;
+}
+.whiteBack{
+  background-color: #fff;
+}
+.ui.small.desc{
+  font-size: 0.8rem;
+  font-style: italic;
+
 }

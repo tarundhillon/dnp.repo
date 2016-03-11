@@ -34,11 +34,15 @@ function makeGant(ganttData, ganttSettings){
   .attr("preserveAspectRatio", "xMinYMin meet");
 
   //set up scales	
-  timeScale = d3.time.scale()
-  .domain([d3.min(tasks, function(d) {return dateFormat.parse(d.startTime);}),
-           d3.max(tasks, function(d) {return dateFormat.parse(d.endTime);})])
-  .range([0,ganttWidth-sidePad]);
-
+  if(!window.ganttData.taskFocus){
+    timeScale = d3.time.scale()
+    .domain([d3.min(tasks, function(d) {return dateFormat.parse(d.startTime);}),
+             d3.max(tasks, function(d) {return dateFormat.parse(d.endTime);})])
+    .range([0,ganttWidth-sidePad]);
+    window.ganttData.timeScale = timeScale;
+  }else{
+    timeScale = window.ganttData.timeScale; // during task focus we need to use the original scale.
+  }
   noMonths = moment(timeScale.domain()[1]).diff(moment(timeScale.domain()[0]),'months');
   xTicks = calTimeScaleTicks(1, noMonths);
   console.log('xTicks ::'+xTicks);
@@ -57,6 +61,7 @@ function makeGant(ganttData, ganttSettings){
 
   makeGrid();
   drawRects();
+  
 
   $('#ganttLoader').hide();
 
@@ -76,9 +81,14 @@ function sortByCategory(a,b){
 }
 
 function autoDimension(){
-  domSvgHeight = $(ganttSettings.containerID).height()*0.9;
-  calSvgHeight = ganttSettings.defTaskHeight * tasks.length + 5 * ganttSettings.defGanttPadding;
+  //domSvgHeight = $(ganttSettings.containerID).height()*0.9;
+  domSvgHeight = ganttSettings.maxSvgHeight;
+  calSvgHeight = ganttSettings.defTaskHeight * tasks.length;
+  calSvgHeight += 2* (0.02 * calSvgHeight); // manage the top and bottom pad
+
   svgHeight = calSvgHeight < domSvgHeight ? calSvgHeight : domSvgHeight;
+
+  console.log('svgHeight='+svgHeight+' , calSvgHeight='+calSvgHeight+' , domSvgHeight='+domSvgHeight);
 
   //svgHeight = $(ganttSettings.containerID).height()*0.9;
   svgWidth  = $(ganttSettings.containerID).width();
@@ -87,6 +97,10 @@ function autoDimension(){
 
   sidePad = svgWidth * 0.2;
   topPad = bottomPad = svgHeight *0.02;
+  if(topPad < ganttSettings.minGanttPadding){
+    topPad = bottomPad = ganttSettings.minGanttPadding;
+  }
+
   rightPad = leftPad = svgWidth *0.02;
 
 
@@ -107,7 +121,7 @@ function autoDimension(){
     ", tasks length:"+noTasks+"\n"+
     ", oneRow:"+oneRow+"\n"+
     ", taskGap:"+taskGap+"\n"+
-    ", barHeight:"+taskHeight+"\n"+
+    ", taskHeight:"+taskHeight+"\n"+
     ", bottomPad:"+bottomPad+"\n"+
     ", sidePad:"+sidePad+"\n"+
     ", leftPad:"+leftPad+"\n"+
@@ -187,15 +201,7 @@ var bigRectLabels = svg.append("g")
 var taskGroup = rectangles.append('g');
     drawTasks(taskGroup,'task');
     drawTasks(taskGroup,'pert');
-    drawTaskLabels(taskGroup);
-    
-
-
-
-    // drawTasks(rectangles,'task');
-    // drawTasks(rectangles,'pert');
-    // drawTaskLabels(rectangles);
-    // //drawTasksAndLabels(rectangles,'task');    
+    drawTaskLabels(taskGroup);   
 
 }
 
@@ -210,102 +216,102 @@ function  getColor(type,i){
 
 }
 
-function drawTasksAndLabels(rectangles,type){
-  var group = rectangles.append("g");
+// function drawTasksAndLabels(rectangles,type){
+//   var group = rectangles.append("g");
 
-  group.append("rect")
-   .attr("rx", 1)
-   .attr("ry", 1)
-   .attr("id",function(d){
-      var id = 'ID';
-      if(type == 'pert') id = 'PID';
-      return id+d.id;
-   })
-   .attr("x", function(d){
-      var mX = timeScale(dateFormat.parse(d.startTime)) + sidePad;
-      return mX;
-    })
-   .attr("y", function(d, i){
-      var mY = i*oneRow + taskGap/2;
-      if(d.startTime == d.endTime) return mY + taskHeight/2 - taskGap/2;
-      return mY;
-    })
-   .attr("width", function(d){
-      var width = 0;
-      if(d.startTime == d.endTime) width = taskHeight * 0.75;
-      else width = (timeScale(dateFormat.parse(d.endTime))-timeScale(dateFormat.parse(d.startTime)));
-      if(type == 'pert' && d.pert !== undefined) width = width * (d.pert/100);
-      return width;
-   })
-   .attr("height", function(d){
-      if(d.startTime == d.endTime) return taskHeight * 0.75;
-      return taskHeight;
-    })
-   .attr("stroke", "none")
-   .attr("cursor","pointer")
-   .attr("opacity",function(){
-      if(type == 'pert') return "1";
-      return "0.4";
-   })
-   .attr("fill", function(d){
-      for (var i = 0; i < categories.length; i++){
-          if (d.type == categories[i]) return getColor('task',i);
-      }
-    })
-   .attr("transform",function(d){
-      var mX = timeScale(dateFormat.parse(d.startTime)) + sidePad;
-      var mY = d3.select(this).attr('y') - d3.select(this).attr('height');
-      if(d.startTime == d.endTime) return "rotate(45,"+mX+","+mY+")";
-      else return "rotate(0)";
-   });
+//   group.append("rect")
+//    .attr("rx", 1)
+//    .attr("ry", 1)
+//    .attr("id",function(d){
+//       var id = 'ID';
+//       if(type == 'pert') id = 'PID';
+//       return id+d.id;
+//    })
+//    .attr("x", function(d){
+//       var mX = timeScale(dateFormat.parse(d.startTime)) + sidePad;
+//       return mX;
+//     })
+//    .attr("y", function(d, i){
+//       var mY = i*oneRow + taskGap/2;
+//       if(d.startTime == d.endTime) return mY + taskHeight/2 - taskGap/2;
+//       return mY;
+//     })
+//    .attr("width", function(d){
+//       var width = 0;
+//       if(d.startTime == d.endTime) width = taskHeight * 0.75;
+//       else width = (timeScale(dateFormat.parse(d.endTime))-timeScale(dateFormat.parse(d.startTime)));
+//       if(type == 'pert' && d.pert !== undefined) width = width * (d.pert/100);
+//       return width;
+//    })
+//    .attr("height", function(d){
+//       if(d.startTime == d.endTime) return taskHeight * 0.75;
+//       return taskHeight;
+//     })
+//    .attr("stroke", "none")
+//    .attr("cursor","pointer")
+//    .attr("opacity",function(){
+//       if(type == 'pert') return "1";
+//       return "0.4";
+//    })
+//    .attr("fill", function(d){
+//       for (var i = 0; i < categories.length; i++){
+//           if (d.type == categories[i]) return getColor('task',i);
+//       }
+//     })
+//    .attr("transform",function(d){
+//       var mX = timeScale(dateFormat.parse(d.startTime)) + sidePad;
+//       var mY = d3.select(this).attr('y') - d3.select(this).attr('height');
+//       if(d.startTime == d.endTime) return "rotate(45,"+mX+","+mY+")";
+//       else return "rotate(0)";
+//    });
 
-   group.append("text")
-  .text(function(d){
-    if(d.pert > 0 ) return d.task +' '+d.pert+'%';
-    else return d.task;
-  })
-  .attr("height",taskHeight)
-  .attr("text-anchor","left")
-  .attr("text-height", function(d){
-      var taskBox = d3.select("rect[id='ID"+d.id+"']").node().getBBox();
-      return taskBox.height;
-  })
-  .attr("transform",function(d){
-    var taskBox = d3.select("rect[id='ID"+d.id+"']").node().getBBox();
-    //mX = taskBox.x + taskBox.width * 0.05;
-    mX = taskBox.x;
-    mY = taskBox.y + taskBox.height *0.75; //+ this.getBBox().height/2;
-    return "translate("+mX+","+mY+")";
-  })
+//    group.append("text")
+//   .text(function(d){
+//     if(d.pert > 0 ) return d.task +' '+d.pert+'%';
+//     else return d.task;
+//   })
+//   .attr("height",taskHeight)
+//   .attr("text-anchor","left")
+//   .attr("text-height", function(d){
+//       var taskBox = d3.select("rect[id='ID"+d.id+"']").node().getBBox();
+//       return taskBox.height;
+//   })
+//   .attr("transform",function(d){
+//     var taskBox = d3.select("rect[id='ID"+d.id+"']").node().getBBox();
+//     //mX = taskBox.x + taskBox.width * 0.05;
+//     mX = taskBox.x;
+//     mY = taskBox.y + taskBox.height *0.75; //+ this.getBBox().height/2;
+//     return "translate("+mX+","+mY+")";
+//   })
   
-  // .attr("x", function(d){
-  //   var taskBox = d3.select("rect[id='ID"+d.id+"']").node().getBBox();
-  //   return taskBox.x + taskBox.width * 0.05;
-  //   // var mX = 0;
-  //   // if(d.startTime == d.endTime)
-  //   //   mX = timeScale(dateFormat.parse(d.startTime)) + sidePad;
-  //   // else
-  //   //   mX = sidePad + timeScale(dateFormat.parse(d.startTime)) + sidePad * 0.02;
-  //   // return mX;
-  // })
-  // .attr("y", function(d,i){
-  //   var taskBox = d3.select("rect[id='ID"+d.id+"']").node().getBBox();
-  //   return taskBox.y;
+//   // .attr("x", function(d){
+//   //   var taskBox = d3.select("rect[id='ID"+d.id+"']").node().getBBox();
+//   //   return taskBox.x + taskBox.width * 0.05;
+//   //   // var mX = 0;
+//   //   // if(d.startTime == d.endTime)
+//   //   //   mX = timeScale(dateFormat.parse(d.startTime)) + sidePad;
+//   //   // else
+//   //   //   mX = sidePad + timeScale(dateFormat.parse(d.startTime)) + sidePad * 0.02;
+//   //   // return mX;
+//   // })
+//   // .attr("y", function(d,i){
+//   //   var taskBox = d3.select("rect[id='ID"+d.id+"']").node().getBBox();
+//   //   return taskBox.y;
 
-  //     // var mY = i*oneRow  + taskHeight;
-  //     // if(d.startTime == d.endTime) return mY + taskHeight/2 - taskGap/2;
-  //     // return mY;
-  // })
-  .attr("font-size", taskFontSize)
-  .attr("font-style",'oblique')
-  .attr("cursor","pointer")
-  .attr("fill", "#333")
-  .on('click', function(d){
-    if(!ganttData.taskFocus) ganttSettings.taskOnClick(d);
-    else return "";
-  });
+//   //     // var mY = i*oneRow  + taskHeight;
+//   //     // if(d.startTime == d.endTime) return mY + taskHeight/2 - taskGap/2;
+//   //     // return mY;
+//   // })
+//   .attr("font-size", taskFontSize)
+//   .attr("font-style",'oblique')
+//   .attr("cursor","pointer")
+//   .attr("fill", "#333")
+//   .on('click', function(d){
+//     if(!ganttData.taskFocus) ganttSettings.taskOnClick(d);
+//     else return "";
+//   });
 
-}
+// }
 
 function drawTasks(taskGroup,type){
   taskGroup.append("rect")
@@ -334,7 +340,7 @@ function drawTasks(taskGroup,type){
     })
     .attr("transform",function(d,i){
       var mX = timeScale(dateFormat.parse(d.startTime)) + sidePad;
-      var mY = i*oneRow + taskGap/2;
+      var mY = i*oneRow + taskGap;
       var rotate = 0;
       if(d.startTime == d.endTime){
         mY = mY  - taskGap/2;
@@ -401,7 +407,7 @@ function drawTaskLabels(rectangles){
     }
     
     if(d.startTime == d.endTime){
-      mY = tY + tH;
+      mY = tY + taskHeight;
       mX += tW;
     }
     else mY = tY + tH *0.80;
@@ -418,86 +424,8 @@ function drawTaskLabels(rectangles){
     else return "";
   });
 
-   // d3.selectAll("text[type='label']")
-   // .attr("transform",function (d,i){
-   //    labelBox = this.getBoundingClientRect();
-   //    mX = labelBox.left;
-   //    mY = labelBox.top;
-   //    if(labelBox.right > svgWidth){
-        
-   //      while(mX + labelBox.width > svgWidth){
-   //        mX -= labelBox.width * 0.01;
-   //      }
-        
-   //    }
-   //    return "translate("+mX+","+mY+")";
-   // });
-/*
-
-<text type="label" id="11" text-height="13.6650390625" transform="translate(697.5659802246093,265.3292236328125)" font-size="12.665024000000003px" font-style="oblique" cursor="pointer" fill="#333">Infrastructure Testing - Shakedown, Penetration 51%</text>
-<rect rx="1" ry="1" x="1022.9420750821928" y="255.08044800000005" width="41.409543390167386" height="13.665024000000003" stroke="none" cursor="pointer" id="PID11" opacity="1" fill="#00B9FA" transform="rotate(0)"></rect>
-
-
-
-
-*/
-
-
-
-
-  // d3.selectAll("text")
-  // .attr("transform",function(d,i){
-  //   var rect = d3.select("rect[id='ID"+i+"']").node();
-  //   if(rect != null){
-  //   var taskBox = d3.select("rect[id='ID"+i+"']").node().getBBox();
-
-  //   mX = taskBox.x + taskBox.width * 0.02;
-    
-  //    if(mX + this.getBBox().width > svgWidth) mX = taskBox.x - this.getBBox().x;
-  //   //   while(mX +this.getBBox().width > taskBox.x){
-  //   //     //console.log(d.task+' mX +this.getBBox().width::'+ (mX +this.getBBox().width));
-  //   //     mX = mX - 1;
-  //   //   }
-  //   // }
-
-  //   mY = taskBox.y + taskBox.height *0.75;
-  //   return "translate("+mX+","+mY+")";
-  // } return "";
-  // });
-
 }
 
-
-var showToolTip = function(e){
-  var tag = "";
-  var output = $("#tag");  
-
-  if (d3.select(this).data()[0].details != undefined){
-  tag = "Task: " + d3.select(this).data()[0].task + "<br/>" + 
-        "Type: " + d3.select(this).data()[0].type + "<br/>" + 
-        "Starts: " + d3.select(this).data()[0].startTime + "<br/>" + 
-        "Ends: " + d3.select(this).data()[0].endTime + "<br/>" + 
-        "Details: " + d3.select(this).data()[0].details;
-  } else {
-  tag = "Task: " + d3.select(this).data()[0].task + "<br/>" + 
-        "Type: " + d3.select(this).data()[0].type + "<br/>" + 
-        "Starts: " + d3.select(this).data()[0].startTime + "<br/>" + 
-        "Ends: " + d3.select(this).data()[0].endTime;
-  }
-  var output = document.getElementById("tag");
-  var x = d3.event.pageX + "px"; 
-  var y = (d3.event.pageY - 20) +"px";
-
-  var output = $("#tag");
-  output.html(tag);
-  output.css("top", y);
-  output.css("left", x);
-  if(!output.is("visible")) output.show(100);
-}  
-
-var hideToolTip =  function() {
-    $("#tag").hide("slow");
-}
 
 function makeGrid(){
 
@@ -505,22 +433,26 @@ function makeGrid(){
       .scale(timeScale)
       .orient('bottom')
       .ticks(d3.time.month, xTicks)
-      .tickSize(-svgHeight, 0, 0)
+      .tickSize(-ganttHeight, 0, 0)
       .tickFormat(d3.time.format('%d %b'));
 
   var grid = svg.append('g')
       .attr('class', 'grid')
-      .attr('transform', 'translate(' +sidePad + ', ' + (svgHeight - bottomPad - topPad) + ')')
+      //.attr('transform', 'translate(' +sidePad + ', ' + (svgHeight - bottomPad - topPad) + ')')
+      .attr('transform', 'translate(' +sidePad + ', ' + (ganttHeight) + ')')
       .call(xAxis)
       .selectAll("text")
               .style("text-anchor", "middle")
               .attr("fill", "#999")
               .attr("stroke", "none")
               .attr("font-size", 10)
+              //.attr("y", -bottomPad)
               .attr("dy", "1em");
 
-  var today = moment();
-  mX = timeScale(dateFormat.parse(moment().format(ganttSettings.momentDateFormat))) + sidePad;
+  //var today = moment(); //TODO this needs to be week dependent. 
+  var ganttStatusDate = getGantStatusDate();
+  //mX = timeScale(dateFormat.parse(moment().format(ganttSettings.momentDateFormat))) + sidePad;
+  mX = timeScale(dateFormat.parse(ganttStatusDate.format(ganttSettings.momentDateFormat))) + sidePad;
 
   svg.append("line")          // attach a line
     .style("stroke", "red")  // colour the line
@@ -528,11 +460,17 @@ function makeGrid(){
     .attr("x1", mX)     // x position of the first end of the line
     .attr("y1", 0)      // y position of the first end of the line
     .attr("x2", mX)     // x position of the second end of the line
-    .attr("y2", svgHeight - bottomPad-topPad);
+    .attr("y2", ganttHeight);
 
 }
 
+function getGantStatusDate(){
+  var curWeek = window.ganttData.week.getInteger();
+  var maxWeek = window.ganttData.weekList[window.ganttData.weekList.length-1].getInteger();
+  var today = moment();
+  return today.subtract(maxWeek - curWeek,'week');
 
+}
 
 //from this stackexchange question: http://stackoverflow.com/questions/1890203/unique-for-arrays-in-javascript
 function checkUnique(arr) {

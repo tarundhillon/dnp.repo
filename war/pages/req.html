@@ -18,12 +18,12 @@
       <div class='ui basic segment'>  
         <div class='ui red header'><i class="file text large red icon circular"></i>Requirements Management</div>
         <p>
-          Re-write :: Project Management Office (PMO) function introduces a structured approach, implementation discipline and delivery control within a programme and a strong one also introduces best practices across the entire programme. 
+          Requirements gathering phase is one of the most important phases for a programme. Poorly capctured requirements, leads to poor design and delays to build phase, but more curcially it often brings a constant stream of change requests which are difficult and expensive to incorporate.  
 
-          Traditionally delivery control requires regular status reviews to monitor the progress against plans. The reports required to support reviews are static and often driven by manual processes and ad-hoc data. These reports are cumbersome and slow to generate and are generally riddled with manual data errors.
+          At D&P our ability to deal with unstructured data allows us to integrate with offline requirements document or standard requirement management products. We are able to visualise requirements during the capcture stage which enables the team to conduct indept analysis for quality, consistency and coverage. 
         </p>
         <br>  
-        <div class="ui three column stackable grid">
+        <!-- <div class="ui three column stackable grid">
           <div class="column left aligned padded">
               <div class='ui red small header'>Business Requirements</div>
               <div>Breif summary over here </div>  
@@ -41,8 +41,8 @@
               <div>Breif summary over here </div>  
               <div>Key bullet points</div>  
           </div>
-        </div> 
-        <br> <br>
+        </div> --> 
+        <!-- <br> <br> -->
         <div class="ui form">
         <div class="fields">
           <label class="ui red tiny header">Select a case study</label>
@@ -73,6 +73,23 @@
         <span class='ui basic label'>Click cell to view more details</span>
       </div>  
       <div class='ui basic segment' id='progressID'></div>
+
+      <!-- Sunbrust wheel  -->
+      <div class='ui basic head segment right aligned'>
+        <div class='ui red small header left floated left aligned'>Analysis</div>
+        <span class='ui basic label right floated right aligned'>
+          Hover to view details and click to zoom
+        </span>
+      </div> 
+      <br>
+      <div class='ui three column grid stackable'>
+          <div class='column'>
+
+            <div class='ui basic red segment' id='sunBurst'></div>
+          </div>
+          <div class='column'><div class='ui basic grey segment' id='sunBurstHover'></div></div>
+          <div class='column'><div class='ui basic grey segment' id='sunBurstOverview'></div></div>
+      </div>  
 
     </div>  
     <div class="ui inverted red vertical footer segment" data-anchor='contact_us' id='dnpFooter'></div>
