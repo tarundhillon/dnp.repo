@@ -27,6 +27,22 @@
   "ownerName" : "dnp.digital",
   "packagePath" : "shared.api",
   "methods" : {
+    "ganttendpoint.updateGantt" : {
+      "path" : "gantt",
+      "httpMethod" : "PUT",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "digital.dnp.shared.api.GanttEndpoint.updateGantt",
+      "request" : {
+        "body" : "autoTemplate(backendRequest)",
+        "bodyName" : "resource"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
     "ganttendpoint.removeGantt" : {
       "path" : "gantt/{id}",
       "httpMethod" : "DELETE",
@@ -46,6 +62,22 @@
       },
       "response" : {
         "body" : "empty"
+      }
+    },
+    "ganttendpoint.insertGantt" : {
+      "path" : "gantt",
+      "httpMethod" : "POST",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "digital.dnp.shared.api.GanttEndpoint.insertGantt",
+      "request" : {
+        "body" : "autoTemplate(backendRequest)",
+        "bodyName" : "resource"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
       }
     },
     "ganttendpoint.listGantt" : {
@@ -73,22 +105,6 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "ganttendpoint.insertGantt" : {
-      "path" : "gantt",
-      "httpMethod" : "POST",
-      "authLevel" : "NONE",
-      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
-      "audiences" : [ ],
-      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
-      "rosyMethod" : "digital.dnp.shared.api.GanttEndpoint.insertGantt",
-      "request" : {
-        "body" : "autoTemplate(backendRequest)",
-        "bodyName" : "resource"
-      },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
-      }
-    },
     "ganttendpoint.getGantt" : {
       "path" : "gantt/{id}",
       "httpMethod" : "GET",
@@ -109,41 +125,10 @@
       "response" : {
         "body" : "autoTemplate(backendResponse)"
       }
-    },
-    "ganttendpoint.updateGantt" : {
-      "path" : "gantt",
-      "httpMethod" : "PUT",
-      "authLevel" : "NONE",
-      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
-      "audiences" : [ ],
-      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
-      "rosyMethod" : "digital.dnp.shared.api.GanttEndpoint.updateGantt",
-      "request" : {
-        "body" : "autoTemplate(backendRequest)",
-        "bodyName" : "resource"
-      },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
-      }
     }
   },
   "descriptor" : {
     "schemas" : {
-      "CollectionResponse_Gantt" : {
-        "id" : "CollectionResponse_Gantt",
-        "type" : "object",
-        "properties" : {
-          "items" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "Gantt"
-            }
-          },
-          "nextPageToken" : {
-            "type" : "string"
-          }
-        }
-      },
       "Gantt" : {
         "id" : "Gantt",
         "type" : "object",
@@ -167,15 +152,33 @@
             "format" : "int64"
           }
         }
+      },
+      "CollectionResponse_Gantt" : {
+        "id" : "CollectionResponse_Gantt",
+        "type" : "object",
+        "properties" : {
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "Gantt"
+            }
+          },
+          "nextPageToken" : {
+            "type" : "string"
+          }
+        }
       }
     },
     "methods" : {
-      "digital.dnp.shared.api.GanttEndpoint.removeGantt" : {
-      },
-      "digital.dnp.shared.api.GanttEndpoint.listGantt" : {
+      "digital.dnp.shared.api.GanttEndpoint.updateGantt" : {
+        "request" : {
+          "$ref" : "Gantt"
+        },
         "response" : {
-          "$ref" : "CollectionResponse_Gantt"
+          "$ref" : "Gantt"
         }
+      },
+      "digital.dnp.shared.api.GanttEndpoint.removeGantt" : {
       },
       "digital.dnp.shared.api.GanttEndpoint.insertGantt" : {
         "request" : {
@@ -185,15 +188,12 @@
           "$ref" : "Gantt"
         }
       },
-      "digital.dnp.shared.api.GanttEndpoint.getGantt" : {
+      "digital.dnp.shared.api.GanttEndpoint.listGantt" : {
         "response" : {
-          "$ref" : "Gantt"
+          "$ref" : "CollectionResponse_Gantt"
         }
       },
-      "digital.dnp.shared.api.GanttEndpoint.updateGantt" : {
-        "request" : {
-          "$ref" : "Gantt"
-        },
+      "digital.dnp.shared.api.GanttEndpoint.getGantt" : {
         "response" : {
           "$ref" : "Gantt"
         }
