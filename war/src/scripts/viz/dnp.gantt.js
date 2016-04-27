@@ -66,7 +66,7 @@ function makeGant(ganttData, ganttSettings){
   $('#ganttLoader').hide();
 
   //console.log("gantt.js makegantt processed in "+(new Date() - startTime)/100+"secs");
-  logTime(startTime,'Gantt Drawn');
+  //_help.logTime(startTime,'Gantt Drawn');
 }
 
 function calTimeScaleTicks(ticks, noMonths){

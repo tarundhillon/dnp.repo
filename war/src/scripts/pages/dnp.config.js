@@ -1,5 +1,5 @@
 requirejs.config({
-		baseUrl: '/src/scripts/',
+		baseUrl: '/src/scripts',
 		paths: {
 				// packages
 				alertify: 'js/alertify.min',
@@ -14,13 +14,17 @@ requirejs.config({
 				pikaday: 'js/pikaday',
 				semanticui: 'js/semantic.min',
 				zeroclipboard: 'js/ZeroClipboard.min',
+				semuiDimmer: 'js/dimmer.min',
+				peity: 'js/jquery.peity',
 				
 				//for google
-				tabletop: 'js/tabletop', // need to merger these dependencies
+				tabletop: 'js/tabletop.fix', // need to merger these dependencies
 				underscore: 'js/underscore-min',
 				backbone: 'js/backbone-min',
 				tabletopSync:'js/backbone.tabletopSync',
 				almond: 'js/almond',
+				googleSheet: 'js/min.gsheet',
+				fs: 'js/fs',
 
 				// code files
 				
@@ -29,13 +33,13 @@ requirejs.config({
 				hexbin:'viz/dnp.hexbin',
 				projcontrol: 'viz/dnp.projctrl',
 				dnpHexGrid: 'viz/dnp.hexgrid',
-				//eqMap: 'viz/dnp.eqmap',
-				//TOM: 'viz/tom/dnp.tom', // check this possible issue 
 				reqmgt:'viz/dnp.reqmgt',
 				timeline: 'viz/dnp.timeline',
+				dnpBubble: 'viz/dnp.bubble.chart',
 
 
-				// page files 
+				// page files
+				dnpCore: 'pages/dnp.core',
 				dnpHelper: 'pages/dnp.helper',
 				dnpMain: 'pages/dnp.main',
 				dnpIndex: 'pages/dnp.index',
@@ -44,11 +48,10 @@ requirejs.config({
 				dnpRegTL: 'pages/dnp.regtl',
 				dnpTOM: 'pages/dnp.tom',
 				dnpEqMap:'pages/dnp.eqmap',
+				dnpTraining:'pages/dnp.training',
+				dnpTeam:'pages/dnp.team',
 		}
-		// ,
-		// shim: {
-		// 	d3: { exports: 'd3'}
-		// }
+
 
 		/*
 			List of semantic elements 

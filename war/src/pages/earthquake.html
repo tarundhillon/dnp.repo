@@ -5,12 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <!-- Site Properities -->
 <title>D&P Associates - Live Earthquake Monitoring</title>
+
+<!-- build:css --> 
 <link href="/src/css/dnp.css" rel="stylesheet">
+<!-- endbuild -->
 
 <script src="/src/scripts/js/require.js"></script>
+<!-- build:js --> 
 <script>
   require(['/src/scripts/pages/dnp.config.js'], function(){ require(['dnpEqMap']) });
 </script>
+<!-- endbuild -->
 
 </head>
 <body class="pushable">
@@ -33,10 +38,10 @@
       <p>
         The map below depicts the earthquake over   
       </p>
-      <div class='horizontal segment'>
-          <a class='ui red label cursor dataFilter' onclick='filterMap(this,"today")'> Today </a>
+      <div class='horizontal segment' id='filterPanel'>
+         <!--  <a class='ui red label cursor dataFilter' onclick='filterMap(this,"today")'> Today </a>
           <a class='ui grey label cursor dataFilter' onclick='filterMap(this,"pastWeek")'> Past Week </a>
-          <a class='ui grey label cursor dataFilter' onclick='filterMap(this,"pastMonth")'> Past Month </a>
+          <a class='ui grey label cursor dataFilter' onclick='filterMap(this,"pastMonth")'> Past Month </a> -->
       </div>  
      <div class='ui two column grid stackable'> 
       <div class='column' id='earthQuakeMap'>

@@ -5,8 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <!-- Site Properities -->
 <title>D&P Associates - Training</title>
+
+<!-- build:css --> 
 <link href="/src/css/dnp.css" rel="stylesheet">
-<script data-main="/src/scripts/pages/dnp.plan" src="/src/scripts/js/require.js"></script>
+<!-- endbuild -->
+
+<!-- build:js --> 
+<script src="/src/scripts/js/require.js"></script>
+<script>
+  require(['/src/scripts/pages/dnp.config.js'], function(){ require(['dnpTraining']) });
+</script>
+<!-- endbuild -->
+
 </head>
 <body class="pushable">
   <!-- Page Contents -->

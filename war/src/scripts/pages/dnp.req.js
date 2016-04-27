@@ -39,13 +39,13 @@ define('dnpReq',['jquery','moment','dnpHelper','d3','reqmgt','tabletop'],
 	
 	readReqData(reqSetting);
 
-});
+
 
 
 function readReqData(reqSetting) {
 	var startTime = moment();
 	if(debug) console.log("Fetching data from "+reqSetting.sheetName+":"+reqSetting.sheetKey);
-	showLoader(reqSetting.functionMapID);
+	dnpHelper.showLoader(reqSetting.functionMapID);
 	// temp workaround for internet connection 
 	//reqData = prepareReqData(JSON.parse(localStorage.getItem('testDataSet')));
 	tabletop.init( {
@@ -54,7 +54,7 @@ function readReqData(reqSetting) {
 		
 
 		callback: function(data, tabletop) {
-			logTime(startTime,'data fetch');
+			dnpHelper.logTime(startTime,'data fetch');
 			if(debug) console.log(data.length+" records fetched");
 			
 			reqData = prepareReqData(data);
@@ -63,9 +63,9 @@ function readReqData(reqSetting) {
 
 			
 
-			makeFunctionMap(reqData,reqSetting);
-			makeProgressOverview(reqData,reqSetting);
-			makeSunBurst(reqData,reqSetting);
+			reqmgt.makeFunctionMap(reqData,reqSetting);
+			reqmgt.makeProgressOverview(reqData,reqSetting);
+			reqmgt.makeSunBurst(reqData,reqSetting);
 			
 			// var tempUrl = '/src/scripts/dnpviz/pages/flare.json';
 			// d3.json(tempUrl, function(error, root) {
@@ -73,7 +73,7 @@ function readReqData(reqSetting) {
 			// 	makeSunBurst(reqData,reqSetting);
 			// });
 
-			hideLoader();
+			dnpHelper.hideLoader();
 
 		}
 		
@@ -210,3 +210,6 @@ var changeDataSource = function (){
 	reqSetting.sheetKey = this.value;
 	readReqData(reqSetting);
 };
+
+
+});

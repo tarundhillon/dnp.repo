@@ -4,7 +4,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <!-- Site Properities -->
-<title>D&P Associates - Timeline</title>
+<title>D&P Associates - Organisation Design & Management</title>
 
 <!-- build:css --> 
 <link href="/src/css/dnp.css" rel="stylesheet">
@@ -13,12 +13,9 @@
 <!-- build:js --> 
 <script src="/src/scripts/js/require.js"></script>
 <script>
-  require(['/src/scripts/pages/dnp.config.js'], function(){ require(['dnpRegTL']) });
+  require(['/src/scripts/pages/dnp.config.js'], function(){ require(['dnpTeam']) });
 </script>
 <!-- endbuild -->
-
-
-
 
 
 </head>
@@ -26,26 +23,22 @@
   <!-- Page Contents -->
   <div class="pusher" data-anchor='home'>
     <div class='ui basic segment'>
-    <div id='dnpHeader' class="ui top fixed inverted red menu"></div>
+      <div id='dnpHeader' class="ui top fixed inverted red menu"></div>
     </div>
 
     <div class="ui basic segment">
       <div class='ui basic segment'>  
-      <div class='ui red header'><i class="history large red icon circular"></i>EU & UK Regulatory Timeline</div> 
-      <!-- <h3 class='ui red'></h3>  -->
-      
-      <p>
-        The chart below depicts the regulatory timeline and landscape within EU and UK.  
-        
-      </p>
-     
-      <div class='ui basic segment' id="timeLineFilter"></div>
-      <div class='ui basic segment' id="timeLineContainer"></div>
-      <div class='ui padded basic segment' id="timeLineDataTable"></div>
-      
-    </div>  
-    </div>
+        <div class='ui red header' id='pageHeader'>
+          <i class="grid layout large red icon circular"></i>
+          Organisation Design & Management
+        </div> 
+      </div>
 
+      <div class='ui basic segment' id='filter'></div>
+      <div class='ui basic segment' id='content'></div>  
+
+    </div>  
+    
   </div>
   <div class="ui inverted red vertical footer segment" data-anchor='contact_us' id='dnpFooter'></div>
 </body></html>

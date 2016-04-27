@@ -1,6 +1,5 @@
-
-@import url('semantic.min.css');
-
+@import url('font.dnp.css');
+@import url('semantic.css');
 
 
 
@@ -625,3 +624,46 @@ a, .cursor{
   font-style: italic;
 
 }
+
+/* Generic firewall message */
+.ui.message.toppad{
+  padding-top: 4rem;
+}
+
+
+/* Org design and management */
+.ui.header.pad{
+  min-height: 2rem;
+}
+
+.ui.dnp.tiny.header{
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.ui.grid.nopad {
+  margin: 0;
+}
+
+.ui.grid.nopad > .column{
+  padding:0.2rem; 
+}
+.ui.teamcard.segment{
+  margin:0.1rem; 
+  margin-bottom: 0.5rem; 
+  padding:0.3rem;
+  border-bottom: 0; 
+  min-height: 4rem;
+  /*min-width: 7rem;*/
+}
+.ui.mini.text{
+  font-size: 0.8rem;
+}
+.ui.tiny.text{
+  font-size: 0.7rem;
+}
+
+/*.ui.mini.checkbox {
+  transform: scale(0.8);
+  -webkit-transform: scale(0.8);
+}*/
