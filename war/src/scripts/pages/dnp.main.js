@@ -44,6 +44,10 @@ define('dnpMain', ['jquery', 'd3', 'dnpHelper'], function($, d3, dnpHelper) {
             }, {
                 text: 'Solution Design'
             }, {
+                text: 'Organisation Design & Management',
+                icon: 'users',
+                link: '/src/pages/team.html'
+            }, {
                 text: 'Testing Coverage'
             }, {
                 text: 'Training',
@@ -54,9 +58,6 @@ define('dnpMain', ['jquery', 'd3', 'dnpHelper'], function($, d3, dnpHelper) {
                 text: 'Target Operating Model',
                 icon: 'grid layout',
                 link: '/src/pages/tom.html'
-            }, {
-                text: 'Organisation Design & Management',
-
             }, {
                 text: 'Product Selection'
             },

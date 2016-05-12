@@ -34,15 +34,15 @@ define('dnpHelper', ['semuiDimmer'], function(_dim) {
     }
 
     globalErrorHandler = function(message, file, line, col, error) {
-        console.log("window.error"+message, "from", file, line, col, error);
+        console.log("window.error" + message, "from", file, line, col, error);
         // - check is there is access to external urls -- google dsn
         // - how to check if the icons are working 
         // - IE11 work
-        
+
         // error message should drive the type of error. 
 
-        if(error.toString().indexOf("access") > -1) showWarningMessage(error);
-        if(error.toString().indexOf("Access") > -1) showWarningMessage(error);
+        if (error.toString().indexOf("access") > -1) showWarningMessage(error);
+        if (error.toString().indexOf("Access") > -1) showWarningMessage(error);
     };
 
 
@@ -114,6 +114,12 @@ define('dnpHelper', ['semuiDimmer'], function(_dim) {
             $(domID).append(html);
             hideLoader();
         }
+        $('#loader').dimmer({
+            duration: {
+                show: 1,
+                hide: 1
+            }
+        });
         $('#loader').dimmer('show');
     }
 
@@ -138,14 +144,15 @@ define('dnpHelper', ['semuiDimmer'], function(_dim) {
     }
 
     var isWarningVisible = false;
+
     function showWarningMessage(msg) {
 
-        if(isWarningVisible) return;
+        if (isWarningVisible) return;
         else isWarningVisible = true;
         var html = "<div class='ui yellow attached message toppad'>";
         html += "<div class='header'><i class='red warning sign icon'></i> Firewall restrictions detected</div>";
         html += "<p> Our site may not work properly due the firewall restrictions in this network, to view the full features please try to access the site outside the firewall.</p>";
-        if(msg !== undefined) html+='<br><i>'+msg+'<i>';
+        if (msg !== undefined) html += '<br><i>' + msg + '<i>';
 
         html += "</div>";
         $('#dnpHeader').after(html);
@@ -257,19 +264,57 @@ define('dnpHelper', ['semuiDimmer'], function(_dim) {
         return arr;
     };
 
-    String.prototype.shorternName = function(){
-        
+    String.prototype.encode = function() {
+        if (this !== undefined) {
+            this.replaceAll("'", '&qoute;');
+        }
+    };
+
+    String.prototype.shorternName = function() {
+
         var str;
-        if(this !== undefined){
+        if (this !== undefined) {
             var tags = this.split(' ');
-            if(tags.length > 1){
-                str=tags[0];
-                for(var i=1; i<tags.length; i++)
-                    str+=tags[i].substring(0,1).toUpperCase();
+            if (tags.length > 1) {
+                str = tags[0];
+                for (var i = 1; i < tags.length; i++)
+                    str += tags[i].substring(0, 1).toUpperCase();
             } else str = this;
         }
         return str;
 
+    };
+
+    String.prototype.million = function(){
+        return parseInt(this,10).million();
+    };
+    Number.prototype.million = function(){
+        if( this !== undefined && this.accounting !== undefined){
+            return accounting.formatMoney(this/1000000);
+        } else return this;
+    };
+
+    var sortByParam = function(param) {
+        return function(a, b) {
+            return a[param] - b[param];
+        };
+    };
+
+    var hexColor = function(color) {
+        switch (color) {
+            case 'red':
+                return '#db2828';
+            case 'blue':
+                return '#2185d0';
+            case 'orange':
+                return '#f2711c';
+            case 'amber':
+                return '#f2711c';
+            case 'green':
+                return '#21BA45';
+            default:
+                return '#000';
+        }
     };
 
     return {
@@ -288,9 +333,11 @@ define('dnpHelper', ['semuiDimmer'], function(_dim) {
         jackPopup: jackPopup,
         intPad: intPad,
         numWord: numWord,
-        causeError:causeError,
-        showWarningMessage:showWarningMessage,
-       // shorternName: shorternName
+        causeError: causeError,
+        showWarningMessage: showWarningMessage,
+        sortByParam: sortByParam,
+        // shorternName: shorternName
+        hexColor: hexColor
 
     };
 

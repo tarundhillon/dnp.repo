@@ -1,6 +1,6 @@
 @import url('font.dnp.css');
 @import url('semantic.css');
-
+@import url('c3.min.css');
 
 
 /*
@@ -666,4 +666,58 @@ a, .cursor{
 /*.ui.mini.checkbox {
   transform: scale(0.8);
   -webkit-transform: scale(0.8);
+}*/
+
+
+/*donut chart title */
+
+.c3-chart-arcs-title{
+  font-size: 5rem;
+  fill: #A0A0A0;
+}
+
+#timelineChart .c3-line-team {
+  stroke-width: 0.3rem;
+}
+#timelineChart .c3-axis-x {
+  stroke-width: 1px;
+}
+
+/*#timelineChart .c3-axis-x-label text{
+  stroke: red;
+  stroke-width: 1px; 
+}*/
+#timelineChart .tick{
+  stroke: #A0A0A0;
+  stroke-width: 0px;
+}
+
+#timelineChart path {
+    stroke-width: 1px;
+    stroke: #C0C0C0;
+}
+
+#summaryChart path {
+    stroke-width: 3px;
+    stroke: #FFFFFF;
+}
+
+.ui.profile.card{
+  margin: 0.5rem;
+}
+.ui.cards > .card, .ui.card {
+  box-shadow: none;
+}
+.blur {
+    -webkit-filter:blur(3px);
+    -moz-filter:blur(3px);
+    -o-filter:blur(3px);
+    filter:blur(3px);
+}
+
+/*.c3 .c3-axis-x path, .c3 .c3-axis-x line {
+    stroke: #666;
+}
+.c3 .c3-axis-y path, .c3 .c3-axis-y line {
+    stroke: #666;
 }*/

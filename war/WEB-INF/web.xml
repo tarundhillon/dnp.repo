@@ -1,28 +1,39 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee                http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
- <!-- Default page to serve -->
-  <welcome-file-list>
-    <welcome-file>src/pages/index.html</welcome-file>
-  </welcome-file-list>
-  
-  <error-page>
-    <error-code>404</error-code>
-    <location>src/error/error.html</location>
-</error-page>
+	<!-- Default page to serve -->
+	<welcome-file-list>
+		<welcome-file>src/pages/index.html</welcome-file>
+	</welcome-file-list>
+
+	<error-page>
+		<error-code>404</error-code>
+		<location>src/error/error.html</location>
+	</error-page>
 
 
-  <servlet>
-    <servlet-name>SystemServiceServlet</servlet-name>
-    <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
-    <init-param>
-      <param-name>services</param-name>
-      <param-value>digital.dnp.shared.api.GanttEndpoint</param-value>
-    </init-param>
-  </servlet>
+	<servlet>
+		<servlet-name>SystemServiceServlet</servlet-name>
+		<servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
+		<init-param>
+			<param-name>services</param-name>
+			<param-value>digital.dnp.shared.api.GanttEndpoint,digital.dnp.shared.api.HMRC_TradeEndpoint,digital.dnp.shared.api.TradeEndpoint</param-value>
+		</init-param>
+	</servlet>
 
-  <servlet-mapping>
-    <servlet-name>SystemServiceServlet</servlet-name>
-    <url-pattern>/_ah/spi/*</url-pattern>
-  </servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>SystemServiceServlet</servlet-name>
+		<url-pattern>/_ah/spi/*</url-pattern>
+	</servlet-mapping>
+
+
+	<servlet>
+		<servlet-name>RemoteApi</servlet-name>
+		<servlet-class>com.google.apphosting.utils.remoteapi.RemoteApiServlet</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>RemoteApi</servlet-name>
+		<url-pattern>/remote_api</url-pattern>
+	</servlet-mapping>
 
 </web-app>

@@ -6,8 +6,11 @@ requirejs.config({
 				d3: 'js/d3.min',
 				d3Geo: 'js/d3.geo.projection.v0.min',
 				d3Topo: 'js/topojson.v0.min',
+				c3: 'js/c3.min',
 				fullpage: 'js/jquery.fullPage',
+				async: 'js/async',
 				googleapi: 'js/client',
+				//gapi: 'js/client.js!onload'
 				handsontable: 'js/handsontable.min',
 				jquery: 'js/jquery.min',
 				moment: 'js/moment.min',
@@ -16,6 +19,12 @@ requirejs.config({
 				zeroclipboard: 'js/ZeroClipboard.min',
 				semuiDimmer: 'js/dimmer.min',
 				peity: 'js/jquery.peity',
+				accounting: 'js/accounting.min',
+
+				// chord
+				dnpChordLayout: 'viz/chord/d3.layout.chord.sort',
+				dnpChordStretched: 'viz/chord/d3.stretched.chord',
+				dnpChord: 'viz/chord/dnp.chord',
 				
 				//for google
 				tabletop: 'js/tabletop.fix', // need to merger these dependencies
@@ -50,6 +59,7 @@ requirejs.config({
 				dnpEqMap:'pages/dnp.eqmap',
 				dnpTraining:'pages/dnp.training',
 				dnpTeam:'pages/dnp.team',
+				dnpBrexit: 'pages/dnp.brexit'
 		}
 
 
